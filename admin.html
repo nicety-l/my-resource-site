@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>资源管理后台 - 我的资源分享站</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            line-height: 1.6;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 2em;
+        }
+        .form-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            border-left: 5px solid #667eea;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #333;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        .button-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+        button {
+            background: #667eea;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background: #5a6fd8;
+        }
+        .btn-generate {
+            background: #28a745;
+        }
+        .btn-generate:hover {
+            background: #218838;
+        }
+        .btn-clear {
+            background: #dc3545;
+        }
+        .btn-clear:hover {
+            background: #c82333;
+        }
+        .resources-section {
+            margin-top: 30px;
+        }
+        .resource-type {
+            margin-bottom: 25px;
+        }
+        .resource-type h3 {
+            color: #333;
+            margin-bottom: 15px;
+            padding-bottom: 5px;
+            border-bottom: 2px solid #667eea;
+        }
+        .resource-item {
+            background: white;
+            padding: 20px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border: 2px solid #e9ecef;
+            border-left: 5px solid #667eea;
+        }
+        .resource-item h4 {
+            color: #333;
+            margin-bottom: 8px;
+        }
+        .resource-item p {
+            color: #666;
+            margin-bottom: 10px;
+        }
+        .resource-links {
+            font-size: 14px;
+            color: #888;
+        }
+        #jsonOutput {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+            margin-top: 20px;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+        .instructions {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 30px;
+        }
+        .instructions h3 {
+            color: #856404;
+            margin-bottom: 10px;
+        }
+        .instructions ol {
+            margin-left: 20px;
+        }
+        .instructions li {
+            margin-bottom: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📊 资源管理后台</h1>
+        
+        <div class="form-section">
+            <h2>添加新资源</h2>
+            <div class="form-group">
+                <label for="resourceType">资源类型：</label>
+                <select id="resourceType">
+                    <option value="software">💻 软件资源</option>
+                    <option value="courses">🎓 学习教程</option>
+                    <option value="books">📖 电子书籍</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="resourceName">资源名称：</label>
+                <input type="text" id="resourceName" placeholder="例如：Visual Studio Code">
+            </div>
+            
+            <div class="form-group">
+                <label for="resourceDesc">资源描述：</label>
+                <textarea id="resourceDesc" rows="3" placeholder="简单描述这个资源的特点和用途"></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="baiduUrl">百度网盘链接：</label>
+                <input type="text" id="baiduUrl" placeholder="https://pan.baidu.com/s/...">
+            </div>
+            
+            <div class="form-group">
+                <label for="aliUrl">阿里云盘链接：</label>
+                <input type="text" id="aliUrl" placeholder="https://www.aliyundrive.com/s/...">
+            </div>
+            
+            <div class="form-group">
+                <label for="resourceCode">提取码：</label>
+                <input type="text" id="resourceCode" placeholder="例如：abcd">
+            </div>
+            
+            <div class="button-group">
+                <button onclick="addResource()">➕ 添加资源</button>
+                <button onclick="generateJSON()" class="btn-generate">🔄 生成JSON数据</button>
+                <button onclick="clearAll()" class="btn-clear">🗑️ 清空所有</button>
+            </div>
+        </div>
+
+        <div class="resources-section">
+            <h2>已添加的资源</h2>
+            <div id="resourceList">
+                <!-- 这里会显示已添加的资源 -->
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h2>生成的JSON数据</h2>
+            <p>复制下面的代码，然后更新GitHub中的data.json文件</p>
+            <div id="jsonOutput">
+点击"生成JSON数据"按钮后，这里会显示生成的代码
+            </div>
+        </div>
+
+        <div class="instructions">
+            <h3>使用说明</h3>
+            <ol>
+                <li>填写上面的表单，点击"添加资源"</li>
+                <li>重复步骤1添加所有资源</li>
+                <li>点击"生成JSON数据"按钮</li>
+                <li>复制生成的JSON代码</li>
+                <li>在GitHub中打开 data.json 文件，点击编辑</li>
+                <li>删除原有内容，粘贴新代码</li>
+                <li>点击提交更改</li>
+                <li>等待2分钟，网站自动更新</li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        // 初始化资源数据
+        let resources = {
+            software: [
+                {
+                    "id": 1,
+                    "name": "Visual Studio Code",
+                    "description": "微软推出的免费代码编辑器，支持多种编程语言",
+                    "baiduUrl": "https://pan.baidu.com/s/example1",
+                    "aliUrl": "https://www.aliyundrive.com/s/example1",
+                    "code": "vsc0",
+                    "updateTime": "2024-01-20"
+                },
+                {
+                    "id": 2,
+                    "name": "Adobe Photoshop 2024",
+                    "description": "专业的图像处理软件",
+                    "baiduUrl": "https://pan.baidu.com/s/example2",
+                    "aliUrl": "https://www.aliyundrive.com/s/example2",
+                    "code": "ps2024",
+                    "updateTime": "2024-01-18"
+                }
+            ],
+            courses: [],
+            books: []
+        };
+
+        // 页面加载时显示已有资源
+        document.addEventListener('DOMContentLoaded', function() {
+            updateResourceList();
+        });
+
+        // 添加资源函数
+        function addResource() {
+            const type = document.getElementById('resourceType').value;
+            const name = document.getElementById('resourceName').value;
+            const desc = document.getElementById('resourceDesc').value;
+            const baidu = document.getElementById('baiduUrl').value;
+            const ali = document.getElementById('aliUrl').value;
+            const code = document.getElementById('resourceCode').value;
+            
+            // 简单验证
+            if (!name) {
+                alert('请填写资源名称！');
+                return;
+            }
+            
+            if (!baidu && !ali) {
+                alert('请至少填写一个网盘链接！');
+                return;
+            }
+            
+            // 创建新资源对象
+            const newResource = {
+                id: resources[type].length + 1,
+                name: name,
+                description: desc,
+                baiduUrl: baidu,
+                aliUrl: ali,
+                code: code,
+                updateTime: new Date().toISOString().split('T')[0] // 今天的日期
+            };
+            
+            // 添加到对应分类
+            resources[type].push(newResource);
+            
+            // 更新显示
+            updateResourceList();
+            
+            // 清空表单
+            clearForm();
+            
+            alert('资源添加成功！');
+        }
+
+        // 更新资源列表显示
+        function updateResourceList() {
+            const list = document.getElementById('resourceList');
+            list.innerHTML = '';
+            
+            // 遍历所有资源类型
+            for (const type in resources) {
+                if (resources[type].length > 0) {
+                    const typeDiv = document.createElement('div');
+                    typeDiv.className = 'resource-type';
+                    
+                    const typeTitle = document.createElement('h3');
+                    typeTitle.textContent = getTypeName(type) + ` (${resources[type].length}个)`;
+                    typeDiv.appendChild(typeTitle);
+                    
+                    // 添加该类型下的所有资源
+                    resources[type].forEach(resource => {
+                        const itemDiv = document.createElement('div');
+                        itemDiv.className = 'resource-item';
+                        
+                        itemDiv.innerHTML = `
+                            <h4>${resource.name}</h4>
+                            <p>${resource.description}</p>
+                            <div class="resource-links">
+                                ${resource.baiduUrl ? '百度网盘: ' + resource.baiduUrl + '<br>' : ''}
+                                ${resource.aliUrl ? '阿里云盘: ' + resource.aliUrl + '<br>' : ''}
+                                ${resource.code ? '提取码: ' + resource.code + '<br>' : ''}
+                                更新时间: ${resource.updateTime}
+                            </div>
+                        `;
+                        
+                        typeDiv.appendChild(itemDiv);
+                    });
+                    
+                    list.appendChild(typeDiv);
+                }
+            }
+            
+            // 如果没有资源，显示提示
+            if (list.innerHTML === '') {
+                list.innerHTML = '<p>还没有添加任何资源，请在上方表单中添加。</p>';
+            }
+        }
+
+        // 获取类型中文名
+        function getTypeName(type) {
+            const names = {
+                software: '💻 软件资源',
+                courses: '🎓 学习教程', 
+                books: '📖 电子书籍'
+            };
+            return names[type] || type;
+        }
+
+        // 清空表单
+        function clearForm() {
+            document.getElementById('resourceName').value = '';
+            document.getElementById('resourceDesc').value = '';
+            document.getElementById('baiduUrl').value = '';
+            document.getElementById('aliUrl').value = '';
+            document.getElementById('resourceCode').value = '';
+        }
+
+        // 生成JSON数据
+        function generateJSON() {
+            const jsonOutput = document.getElementById('jsonOutput');
+            jsonOutput.textContent = JSON.stringify(resources, null, 2);
+            alert('JSON数据已生成！请复制上面的代码到GitHub的data.json文件中。');
+        }
+
+        // 清空所有资源
+        function clearAll() {
+            if (confirm('确定要清空所有已添加的资源吗？此操作不可撤销！')) {
+                resources = {
+                    software: [],
+                    courses: [],
+                    books: []
+                };
+                updateResourceList();
+                document.getElementById('jsonOutput').textContent = '点击"生成JSON数据"按钮后，这里会显示生成的代码';
+                alert('已清空所有资源！');
+            }
+        }
+    </script>
+</body>
+</html>
