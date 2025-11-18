@@ -135,5 +135,99 @@
     <footer>
         <p>© 2024 我的资源分享站 - 仅供学习交流使用</p>
     </footer>
+    <script>
+    // 加载资源数据并更新首页
+    async function loadHomepageData() {
+        try {
+            const response = await fetch('data.json');
+            const data = await response.json();
+            updateHomepage(data);
+        } catch (error) {
+            console.log('数据文件尚未创建，可以使用管理后台添加资源');
+        }
+    }
+
+    function updateHomepage(data) {
+        // 更新资源统计
+        const softwareCount = data.software ? data.software.length : 0;
+        const coursesCount = data.courses ? data.courses.length : 0;
+        const booksCount = data.books ? data.books.length : 0;
+        
+        // 更新最新资源显示
+        const latestResources = document.querySelector('.resource-grid');
+        if (latestResources) {
+            let latestHtml = '';
+            
+            if (softwareCount > 0) {
+                latestHtml += `<div class="resource-card">
+                    <h3>💻 软件工具</h3>
+                    <p>已有 ${softwareCount} 个软件资源</p>
+                    <a href="software.html" class="btn">查看资源</a>
+                </div>`;
+            } else {
+                latestHtml += `<div class="resource-card">
+                    <h3>💻 软件工具</h3>
+                    <p>精选实用软件和工具</p>
+                    <a href="software.html" class="btn">查看资源</a>
+                </div>`;
+            }
+            
+            if (coursesCount > 0) {
+                latestHtml += `<div class="resource-card">
+                    <h3>🎓 学习教程</h3>
+                    <p>已有 ${coursesCount} 个教程资源</p>
+                    <a href="courses.html" class="btn">查看资源</a>
+                </div>`;
+            } else {
+                latestHtml += `<div class="resource-card">
+                    <h3>🎓 学习教程</h3>
+                    <p>优质视频和文档教程</p>
+                    <a href="courses.html" class="btn">查看资源</a>
+                </div>`;
+            }
+            
+            if (booksCount > 0) {
+                latestHtml += `<div class="resource-card">
+                    <h3>📖 电子书籍</h3>
+                    <p>已有 ${booksCount} 个电子书资源</p>
+                    <a href="books.html" class="btn">查看资源</a>
+                </div>`;
+            } else {
+                latestHtml += `<div class="resource-card">
+                    <h3>📖 电子书籍</h3>
+                    <p>各类电子书和文档</p>
+                    <a href="books.html" class="btn">查看资源</a>
+                </div>`;
+            }
+            
+            latestResources.innerHTML = latestHtml;
+        }
+        
+        // 显示最新资源
+        const latestSection = document.querySelector('section:last-of-type');
+        if (latestSection && data.software && data.software.length > 0) {
+            let latestHtml = '<h3 style="text-align: center;">最新资源</h3><div style="text-align: center; margin-top: 1rem;">';
+            
+            // 显示最新的3个软件资源
+            data.software.slice(0, 3).forEach(resource => {
+                latestHtml += `<p>${resource.name} - `;
+                if (resource.baiduUrl) {
+                    latestHtml += `<a href="${resource.baiduUrl}" target="_blank">百度网盘</a> `;
+                }
+                if (resource.aliUrl) {
+                    latestHtml += `<a href="${resource.aliUrl}" target="_blank">阿里云盘</a>`;
+                }
+                latestHtml += `</p>`;
+            });
+            
+            latestHtml += '</div>';
+            latestSection.innerHTML = latestHtml;
+        }
+    }
+
+    // 页面加载时读取数据
+    document.addEventListener('DOMContentLoaded', loadHomepageData);
+</script>
 </body>
+
 </html>
