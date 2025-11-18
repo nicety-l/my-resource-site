@@ -17,6 +17,15 @@
       "aliUrl": "https://www.aliyundrive.com/s/example2",
       "code": "ps2024",
       "updateTime": "2024-01-18"
+    },
+    {
+      "id": 3,
+      "name": "剪影破解版",
+      "description": "剪影破解版",
+      "baiduUrl": "https://chat.deepseek.com/a/chat/s/d01af45f-b0dd-47a2-88f6-0279be7cfa48",
+      "aliUrl": "",
+      "code": "1234",
+      "updateTime": "2025-11-18"
     }
   ],
   "courses": [],
