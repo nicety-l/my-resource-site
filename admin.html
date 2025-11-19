@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -150,14 +151,35 @@
         .instructions li {
             margin-bottom: 8px;
         }
+        .nav-links {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .nav-links a {
+            color: #667eea;
+            text-decoration: none;
+            margin: 0 10px;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
-    <nav>
-    <a href="index.html">🏠 返回网站</a>
-    <a href="software.html">💻 软件资源</a>
-    <a href="admin.html" class="active">📊 管理后台</a>
-</nav>
+    <div class="container">
+        <div class="nav-links">
+            <a href="index.html">🏠 返回网站首页</a>
+        </div>
+        
+        <h1>📊 资源管理后台</h1>
+        
+        <div class="form-section">
+            <h2>添加新资源</h2>
+            <div class="form-group">
+                <label for="resourceType">资源类型：</label>
+                <select id="resourceType">
+                    <option value="software">💻 软件资源</option>
+                    <option value="courses">🎓 学习教程</option>
+                    <option value="books">📖 电子书籍</option>
+                </select>
             </div>
             
             <div class="form-group">
@@ -223,35 +245,25 @@
     </div>
 
     <script>
-        // 初始化资源数据
+        // 初始化资源数据 - 从本地存储加载或使用默认数据
         let resources = {
-            software: [
-                {
-                    "id": 1,
-                    "name": "Visual Studio Code",
-                    "description": "微软推出的免费代码编辑器，支持多种编程语言",
-                    "baiduUrl": "https://pan.baidu.com/s/example1",
-                    "aliUrl": "https://www.aliyundrive.com/s/example1",
-                    "code": "vsc0",
-                    "updateTime": "2024-01-20"
-                },
-                {
-                    "id": 2,
-                    "name": "Adobe Photoshop 2024",
-                    "description": "专业的图像处理软件",
-                    "baiduUrl": "https://pan.baidu.com/s/example2",
-                    "aliUrl": "https://www.aliyundrive.com/s/example2",
-                    "code": "ps2024",
-                    "updateTime": "2024-01-18"
-                }
-            ],
+            software: [],
             courses: [],
             books: []
         };
 
         // 页面加载时显示已有资源
         document.addEventListener('DOMContentLoaded', function() {
-            updateResourceList();
+            // 尝试从本地存储加载数据
+            const savedData = localStorage.getItem('resourceData');
+            if (savedData) {
+                try {
+                    resources = JSON.parse(savedData);
+                    updateResourceList();
+                } catch (e) {
+                    console.log('无法加载本地数据，使用默认数据');
+                }
+            }
         });
 
         // 添加资源函数
@@ -263,14 +275,11 @@
             const ali = document.getElementById('aliUrl').value;
             const code = document.getElementById('resourceCode').value;
             
+            console.log('添加资源被点击', {type, name, desc, baidu, ali, code}); // 调试信息
+            
             // 简单验证
             if (!name) {
                 alert('请填写资源名称！');
-                return;
-            }
-            
-            if (!baidu && !ali) {
-                alert('请至少填写一个网盘链接！');
                 return;
             }
             
@@ -287,6 +296,9 @@
             
             // 添加到对应分类
             resources[type].push(newResource);
+            
+            // 保存到本地存储
+            localStorage.setItem('resourceData', JSON.stringify(resources));
             
             // 更新显示
             updateResourceList();
@@ -375,6 +387,7 @@
                     courses: [],
                     books: []
                 };
+                localStorage.removeItem('resourceData');
                 updateResourceList();
                 document.getElementById('jsonOutput').textContent = '点击"生成JSON数据"按钮后，这里会显示生成的代码';
                 alert('已清空所有资源！');
